@@ -871,7 +871,7 @@ function changeWeather(weather)
 
 
 function showPosition() {
-    var url = "http://api.openweathermap.org/data/2.5/weather?lat=42.25368145706318&lon=-72.35973439627313&appid=f4c4c0c68b80e96610420660681b1e46";
+    var url = "http://api.openweathermap.org/data/2.5/weather?lat=42.25368145706318&lon=-72.35973439627313&appid=f4c4c0c68b80e96610420660681b1e46"; //change location here
     //var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url);
