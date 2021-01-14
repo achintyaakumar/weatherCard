@@ -61,7 +61,7 @@ var fog = [
 
 var classes = ['night', 'day', 'hot', 'cold'];
 
-// set weather types ☁️ 🌬 🌧 ⛈ ☀️
+// set weather types 
 
 var weather = [
 { type: 'snow', class: '', intensity: 1, name: 'Snow' },
@@ -119,11 +119,11 @@ var weatherMap = {
   35: { type: 'hail', class: '', intensity: 1, icon: 'wi-hail', name: 'Mixed Rain and Hail' }, //mixed rain and hail
   36: { type: 'sun', class: 'hot', intensity: 1, icon: 'wi-day-sunny', name: 'Hot' }, //hot
   37: { type: 'thunder', class: '', intensity: .25, icon: 'wi-storm-showers', name: 'Isolated Thunderstorms' }, //isolated thunderstorms
-  38: { type: 'thunder', class: '', intensity: .5, icon: 'wi-storm-showers', name: 'Scattered Thunderstorms' }, //scattered thunderstorms
-  39: { type: 'thunder', class: '', intensity: .5, icon: 'wi-storm-showers', name: 'Scattered Thunderstorms' }, //scattered thunderstorms
+  38: { type: 'thunder', class: 'night', intensity: 1, icon: 'wi-storm-showers', name: 'Thunderstorm' }, //thunderstorm (night)
+  39: { type: 'rain', class: 'night', intensity: 1, icon: 'wi-storm-showers', name: 'Rain' }, //Rain (night)
   40: { type: 'rain', class: '', intensity: .75, icon: 'wi-showers', name: 'Scattered Showers' }, //scattered showers
-  41: { type: 'snow', class: 'cold', intensity: 1.75, icon: 'wi-snow', name: 'Heavy Snow' }, //heavy snow
-  42: { type: 'snow', class: 'cold', intensity: .5, icon: 'wi-snow', name: 'Scattered Snow Showers' }, //scattered snow showers
+  41: { type: 'rain', class: 'night', intensity: 0.5, icon: 'wi-sprinkle', name: 'Drizzle' }, //Drizzle (night)
+  42: { type: 'snow', class: 'night', intensity: 1, icon: 'wi-snow', name: 'Snow' }, //snow (night)
   43: { type: 'snow', class: 'cold', intensity: 1.75, icon: 'wi-snow', name: 'Heavy Snow' }, //heavy snow
   44: { type: 'cloud', class: '', intensity: .1, icon: 'wi-day-cloudy', name: 'Partly Cloudy' }, //partly cloudy
   45: { type: 'thunder', class: '', intensity: .5, icon: 'wi-storm-showers', name: 'Thundershowers' }, //thundershowers
@@ -879,24 +879,78 @@ function showPosition() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             var jsonResponse = JSON.parse(xhr.responseText);
-            var weather = jsonResponse.weather[0].main;
-            console.log(weather);
-            changeWeather(weather);
+            //var weather = jsonResponse.weather[0].main;
+            //console.log(weather);
+            setWeather(jsonResponse);
         }
     };
     xhr.send();
   }
 
 function setWeather(weather) {
-  var condition = weather.condition;
-  var forecast = weather.forecast[0];
-  //changeWeather(weatherMap[forecast.code]);
-  //updateTempText(forecast.high, "°F");
-  changeWeather(weatherMap[condition.code]);
-  updateTempText(condition.temp, "°F");
+  var condition = weather.weather[0].main;
+  console.log(condition);
+  var sunset = weather.sys.sunset;
+  var time = Date.now();
+  time = (time-(time%1000))/1000;
+  var temp = weather.main.temp - 273;
+  updateTempText(((temp*9/5)+32).toFixed(0), "°F");
+  //Weather changing logic. Look up weather codes on OpenWeather and Yahoo Weather for more information. 
+  if(time>sunset){ //check for night or day
+    if(weather.weather[0].id===800) { //clear night
+      changeWeather(weatherMap[31]);
+    }
+    else if(weather.weather[0].id===801 || weather.weather[0].id===802) { //partly cloudy night
+      changeWeather(weatherMap[29]);
+    }
+    else if(weather.weather[0].id===803 || weather.weather[0].id===804) { //mostly cloudly night
+      changeWeather(weatherMap[27]);
+    }
+    else if((weather.weather[0].id/100).toFixed(0)===6) { //snowy night
+      changeWeather(weatherMap[42]);
+    }
+    else if(weather.weather[0].id===500 || weather.weather[0].id===501) { //Light rain night
+      changeWeather(weatherMap[45]);
+    }
+    else if(weather.weather[0].id===502 || weather.weather[0].id===503 || weather.weather[0].id===504 || weather.weather[0].id===511 || weather.weather[0].id===520 || weather.weather[0].id===521 || weather.weather[0].id===522 || weather.weather[0].id===531) { //heavy rain night
+      changeWeather(weatherMap[39]); 
+    }
+    else if((weather.weather[0].id/100).toFixed(0)===3) { //drizzle night (maybe remove)
+      changeWeather(weatherMap[41]); 
+    }
+    else if((weather.weather[0].id/100).toFixed(0)===2) { //thundertorm night
+      changeWeather(weatherMap[38]); 
+    }
+  }
+else {
+    if(weather.weather[0].id===800) { //clear day
+      changeWeather(weatherMap[32]);
+    }
+    else if(weather.weather[0].id===801 || weather.weather[0].id===802) { //partly cloudy day
+      changeWeather(weatherMap[30]);
+    }
+    else if(weather.weather[0].id===803 || weather.weather[0].id===804) { //mostly cloudy day
+      changeWeather(weatherMap[28]);
+    }
+    else if((weather.weather[0].id/100).toFixed(0)==6) { //snow day
+      changeWeather(weatherMap[16]);
+    }
+    else if(weather.weather[0].id===500 || weather.weather[0].id===501) { //light rain day (drizzle)
+      changeWeather(weatherMap[9]);
+    }
+    else if(weather.weather[0].id===502 || weather.weather[0].id===503 || weather.weather[0].id===504 || weather.weather[0].id===511 || weather.weather[0].id===520 || weather.weather[0].id===521 || weather.weather[0].id===522 || weather.weather[0].id===531) { //heavy rain day
+      changeWeather(weatherMap[12]);
+    }
+    else if((weather.weather[0].id/100).toFixed(0)==3) { //drizzle day
+      changeWeather(weatherMap[9]);
+    }
+    else if((weather.weather[0].id/100).toFixed(0)==2) { //thunderstorm day
+      changeWeather(weatherMap[4]);
+    }
+  }
 }
 
-showPosition();
+setInterval(showPosition, 60000*5);
 
 class ViewModel {
   constructor() {
