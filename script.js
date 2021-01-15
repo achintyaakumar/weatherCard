@@ -103,8 +103,8 @@ var weatherMap = {
   19: { type: 'haze', class: 'hot', intensity: .5, icon: 'wi-sandstorm', name: 'Dust' }, //dust
   20: { type: 'haze', class: '', intensity: .5, icon: 'wi-fog', name: 'Foggy' }, //foggy
   21: { type: 'haze', class: '', intensity: .5, icon: 'wi-fog', name: 'Haze' }, //haze
-  22: { type: 'smoke', class: '', intensity: .5, icon: 'wi-smoke', name: 'Smokey' }, //smoky
-  23: { type: 'wind', class: '', intensity: 3, icon: 'wi-cloudy-gusts', name: 'Blustery' }, //blustery
+  22: { type: 'haze', class: 'night', intensity: .5, icon: 'wi-fog', name: 'Foggy' }, //foggy (night)
+  23: { type: 'haze', class: 'night', intensity: .5, icon: 'wi-fog', name: 'Haze' }, //haze (night)
   24: { type: 'wind', class: '', intensity: 1, icon: 'wi-strong-wind', name: 'Windy' }, //windy
   25: { type: 'sun', class: 'cold', intensity: 1, icon: 'wi-snowflake-cold', name: 'Cold' }, //cold
   26: { type: 'cloud', class: '', intensity: 1, icon: 'wi-cloudy', name: 'Cloudy' }, //cloudy
@@ -906,7 +906,7 @@ function setWeather(weather) {
     else if(weather.weather[0].id===803 || weather.weather[0].id===804) { //mostly cloudly night
       changeWeather(weatherMap[27]);
     }
-    else if((weather.weather[0].id/100).toFixed(0)===6) { //snowy night
+    else if((weather.weather[0].id/100).toFixed(0)==6) { //snowy night
       changeWeather(weatherMap[42]);
     }
     else if(weather.weather[0].id===500 || weather.weather[0].id===501) { //Light rain night
@@ -915,11 +915,14 @@ function setWeather(weather) {
     else if(weather.weather[0].id===502 || weather.weather[0].id===503 || weather.weather[0].id===504 || weather.weather[0].id===511 || weather.weather[0].id===520 || weather.weather[0].id===521 || weather.weather[0].id===522 || weather.weather[0].id===531) { //heavy rain night
       changeWeather(weatherMap[39]); 
     }
-    else if((weather.weather[0].id/100).toFixed(0)===3) { //drizzle night (maybe remove)
+    else if((weather.weather[0].id/100).toFixed(0)==3) { //drizzle night (maybe remove)
       changeWeather(weatherMap[41]); 
     }
-    else if((weather.weather[0].id/100).toFixed(0)===2) { //thundertorm night
+    else if((weather.weather[0].id/100).toFixed(0)==2) { //thundertorm night
       changeWeather(weatherMap[38]); 
+    }
+    else if((weather.weather[0].id/100).toFixed(0)==7) {
+      changeWeather(weatherMap[22]); 
     }
   }
 else {
@@ -947,10 +950,13 @@ else {
     else if((weather.weather[0].id/100).toFixed(0)==2) { //thunderstorm day
       changeWeather(weatherMap[4]);
     }
+    else if((weather.weather[0].id/100).toFixed(0)==7) { //Foggy day
+      changeWeather(weatherMap[20]);
+    }
   }
 }
 
-setInterval(showPosition, 60000*5);
+setInterval(showPosition, 6000);
 
 class ViewModel {
   constructor() {
